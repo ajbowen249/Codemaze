@@ -1,57 +1,67 @@
-function init() {
-	lastTime = 0;
+"use strict";
 
-	var c = document.getElementById("gameCanvas");
+class Game {
+    constructor() {
+        this.WIDTH = 1024;
+        this.HEIGHT = 768;
 
-	var WIDTH = 1024;
-	var HEIGHT = 768;
+        this.lastTime = 0;
+        this.renderer = new THREE.WebGLRenderer();
 
-	renderer = new THREE.WebGLRenderer();
-	renderer.setSize(WIDTH, HEIGHT);
-	c.appendChild(renderer.domElement);
+        var c = document.getElementById("gameCanvas");
+    
+        this.renderer.setSize(this.WIDTH, this.HEIGHT);
+        c.appendChild(this.renderer.domElement);
 
-	var VIEW_ANGLE = 50,
-		ASPECT = WIDTH / HEIGHT,
-		NEAR = 0.1,
-		FAR = 100000000;
+        var VIEW_ANGLE = 50,
+            ASPECT = this.WIDTH / this.HEIGHT,
+            NEAR = 0.1,
+            FAR = 100000000;
 
-	camera = new THREE.PerspectiveCamera(
-		VIEW_ANGLE,
-		ASPECT,
-		NEAR,
-		FAR
-	);
+        this.camera = new THREE.PerspectiveCamera(
+            VIEW_ANGLE,
+            ASPECT,
+            NEAR,
+            FAR
+        );
 
-	scene = new THREE.Scene();
+        this.scene = new THREE.Scene();
 
-	var geometry = new THREE.BoxGeometry(1, 1, 1);
-	var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-	var cube = new THREE.Mesh(geometry, material);
-	scene.add(cube);
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        var cube = new THREE.Mesh(geometry, material);
+        this.scene.add(cube);
 
-	gameObjects = new Array();
-	gameObjects["viewport"] = new Viewport(scene, camera, new THREE.Vector3(0, 0, 10));
-	gameObjects["diag"] = new Diagnostics(c);
+        this.gameObjects = new Array();
+        this.gameObjects["viewport"] = new Viewport(this.scene, this.camera, new THREE.Vector3(0, 0, 10));
+        this.gameObjects["diag"] = new Diagnostics(c);
 
-	clock = new THREE.Clock();
+        this.clock = new THREE.Clock();
+    }
+
+    draw() {
+        var time = this.clock.getElapsedTime();
+        var delta = time - this.lastTime;
+        this.lastTime = time;
+
+        for (var obj in this.gameObjects) {
+            this.gameObjects[obj].process(time, delta);
+        }
+
+        this.scene.updateMatrixWorld();
+
+        this.renderer.render(this.scene, this.camera);
+    }
+}
+
+let game;
+
+function main() {
+    game = new Game();
+    draw();
 }
 
 function draw() {
-	time = clock.getElapsedTime();
-	delta = time - lastTime;
-	lastTime = time;
-
-	for (obj in gameObjects) {
-		gameObjects[obj].process(time, delta);
-	}
-
-	scene.updateMatrixWorld();
-
-	renderer.render(scene, camera);
-	requestAnimationFrame(draw);
-}
-
-function main() {
-	init();
-	draw();
+    game.draw();
+    requestAnimationFrame(draw);
 }
