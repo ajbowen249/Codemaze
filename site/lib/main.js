@@ -1,40 +1,48 @@
 "use strict";
 
-class Game {
+class Main {
     constructor() {
-        this.WIDTH = 1024;
-        this.HEIGHT = 768;
+        this.width = 1024;
+        this.height = 768;
 
         this.lastTime = 0;
         this.renderer = new THREE.WebGLRenderer();
 
-        var c = document.getElementById("gameCanvas");
+        var canvas = document.getElementById("gameCanvas");
     
-        this.renderer.setSize(this.WIDTH, this.HEIGHT);
-        c.appendChild(this.renderer.domElement);
+        this.renderer.setSize(this.width, this.height);
+        canvas.appendChild(this.renderer.domElement);
 
-        var VIEW_ANGLE = 50,
-            ASPECT = this.WIDTH / this.HEIGHT,
-            NEAR = 0.1,
-            FAR = 100000000;
+        var viewAngle = 50,
+            aspectRatio = this.width / this.height,
+            nearClip = 0.1,
+            drawDistance = 1000;
 
         this.camera = new THREE.PerspectiveCamera(
-            VIEW_ANGLE,
-            ASPECT,
-            NEAR,
-            FAR
+            viewAngle,
+            aspectRatio,
+            nearClip,
+            drawDistance
         );
 
         this.scene = new THREE.Scene();
 
-        var geometry = new THREE.BoxGeometry(1, 1, 1);
-        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        var cube = new THREE.Mesh(geometry, material);
-        this.scene.add(cube);
+        let thisScene = this.scene;
+
+        var loader = new THREE.JSONLoader();
+        loader.load('/lib/assets/characters/ghost/ghost.json', function(geometry, materials){
+            var mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({
+                map: THREE.ImageUtils.loadTexture("/lib/assets/characters/ghost/ghost.png"), 
+                morphTargets: true 
+            }));
+            thisScene.add(mesh, new THREE.MeshFaceMaterial(materials));
+        });
+
+        this.scene.add(new THREE.AmbientLight(0xffffff));
 
         this.gameObjects = new Array();
         this.gameObjects["viewport"] = new Viewport(this.scene, this.camera, new THREE.Vector3(0, 0, 10));
-        this.gameObjects["diag"] = new Diagnostics(c);
+        this.gameObjects["diag"] = new Diagnostics(canvas);
 
         this.clock = new THREE.Clock();
     }
@@ -54,14 +62,14 @@ class Game {
     }
 }
 
-let game;
+let mainObj;
 
 function main() {
-    game = new Game();
+    mainObj = new Main();
     draw();
 }
 
 function draw() {
-    game.draw();
+    mainObj.draw();
     requestAnimationFrame(draw);
 }
