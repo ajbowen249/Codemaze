@@ -9,7 +9,7 @@ class Main {
         this.renderer = new THREE.WebGLRenderer();
 
         var canvas = document.getElementById("gameCanvas");
-    
+
         this.renderer.setSize(this.width, this.height);
         canvas.appendChild(this.renderer.domElement);
 
@@ -29,13 +29,20 @@ class Main {
 
         let thisScene = this.scene;
 
-        var loader = new THREE.JSONLoader();
-        loader.load('/lib/assets/characters/ghost/ghost.json', function(geometry, materials){
-            var mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({
-                map: THREE.ImageUtils.loadTexture("/lib/assets/characters/ghost/ghost.png"), 
-                morphTargets: true 
-            }));
-            thisScene.add(mesh, new THREE.MeshFaceMaterial(materials));
+        var modelLoader = new THREE.JSONLoader();
+        var textureLoader = new THREE.TextureLoader();
+        modelLoader.load('/assets/characters/ghost/ghost.json', function (geometry, materials) {
+            textureLoader.load('/assets/characters/ghost/ghost.png', function (texture) {
+                var mesh = new THREE.Mesh(geometry, [
+                        new THREE.MeshLambertMaterial({
+                        map: texture,
+                        morphTargets: true
+                    }), 
+                    materials
+                ]);
+
+                thisScene.add(mesh);
+            });
         });
 
         this.scene.add(new THREE.AmbientLight(0xffffff));
