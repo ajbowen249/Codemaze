@@ -29,23 +29,18 @@ class Main {
 
         let thisScene = this.scene;
 
-        var modelLoader = new THREE.JSONLoader();
-        var textureLoader = new THREE.TextureLoader();
-        modelLoader.load('/assets/characters/ghost/ghost.json', function (geometry, materials) {
-            textureLoader.load('/assets/characters/ghost/ghost.png', function (texture) {
-                var mesh = new THREE.Mesh(geometry, [
-                        new THREE.MeshLambertMaterial({
-                        map: texture,
-                        morphTargets: true
-                    }), 
-                    materials
-                ]);
+        loadCharacters(function(loaded, total){}, function(loadedCharacters){
+            let testGhost = loadedCharacters['ghost'];
+            testGhost.translateX(4.5);
+            testGhost.rotateY(-1 * Math.PI / 3.5);
+            thisScene.add(testGhost);
+            thisScene.add(loadedCharacters['sphere']);
 
-                thisScene.add(mesh);
-            });
+            let light = new THREE.DirectionalLight(0xffffff, 2);
+            light.target = testGhost;
+            thisScene.add(light);
+            thisScene.add(new THREE.AmbientLight(0xffffff, 1));
         });
-
-        this.scene.add(new THREE.AmbientLight(0xffffff));
 
         this.gameObjects = new Array();
         this.gameObjects["viewport"] = new Viewport(this.scene, this.camera, new THREE.Vector3(0, 0, 10));

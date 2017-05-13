@@ -1,9 +1,9 @@
 "use strict";
 
-class Diagnostics{
+class Diagnostics {
     constructor(mainCanvas) {
         this.overlayCanvas = document.createElement('canvas');
-        this.overlayCanvas.style.zIndex="1000";
+        this.overlayCanvas.style.zIndex = "1000";
         this.overlayCanvas.style.position = 'absolute';
         this.overlayCanvas.style.left = '0px';
         this.overlayCanvas.style.top = '0px';
