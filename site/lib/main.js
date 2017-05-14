@@ -29,7 +29,7 @@ class Main {
 
         let thisScene = this.scene;
 
-        loadCharacters(function(loaded, total){}, function(loadedCharacters){
+        loadCharacters(function (loaded, total) { }, function (loadedCharacters) {
             let testGhost = loadedCharacters['ghost'];
             testGhost.translateX(4.5);
             testGhost.rotateY(-1 * Math.PI / 3.5);
