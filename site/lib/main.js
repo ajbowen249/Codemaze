@@ -5,6 +5,8 @@ class Main {
         this.width = 1024;
         this.height = 768;
 
+        this.physics = new SimplePhysics(new THREE.Vector3(10, 0, 10), new THREE.Vector3(-10, 0, -10));
+
         this.lastTime = 0;
         this.renderer = new THREE.WebGLRenderer();
 
@@ -26,14 +28,19 @@ class Main {
         );
 
         this.scene = new THREE.Scene();
+        this.gameObjects = new Array();
 
         let thisScene = this.scene;
+        let thisGameObjects = this.gameObjects;
+        let thisPhysics = this.physics;
 
         loadCharacters(function (loaded, total) { }, function (loadedCharacters) {
             let testGhost = loadedCharacters['ghost'];
             testGhost.translateX(4.5);
             testGhost.rotateY(-1 * Math.PI / 3.5);
-            thisScene.add(testGhost);
+            
+            thisGameObjects["testPlayer"] = new Player(testGhost, thisScene, thisPhysics);
+
             thisScene.add(loadedCharacters['sphere']);
 
             let light = new THREE.DirectionalLight(0xffffff, 2);
@@ -42,7 +49,6 @@ class Main {
             thisScene.add(new THREE.AmbientLight(0xffffff, 1));
         });
 
-        this.gameObjects = new Array();
         this.gameObjects["viewport"] = new Viewport(this.scene, this.camera, new THREE.Vector3(0, 0, 10));
         this.gameObjects["diag"] = new Diagnostics(canvas);
 
